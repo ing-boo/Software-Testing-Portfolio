@@ -1,0 +1,309 @@
+{
+	"info": {
+		"_postman_id": "19658aa8-8536-4996-a96d-ee6aad097b08",
+		"name": "在线书店API测试",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49313738",
+		"_collection_link": "https://ing-boo-5593277.postman.co/workspace/Orange-lemon's-Workspace~2dbc1d71-8663-4277-8f0d-a92402c7aa84/collection/49313738-19658aa8-8536-4996-a96d-ee6aad097b08?action=share&source=collection_link&creator=49313738"
+	},
+	"item": [
+		{
+			"name": "获取所有图书",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 验证状态码是200\r",
+							"pm.test(\"状态码应该是200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 验证返回的是数组\r",
+							"pm.test(\"响应应该是数组\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.be.an('array');\r",
+							"});\r",
+							"\r",
+							"// 验证数组不为空\r",
+							"pm.test(\"图书列表不应该为空\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.length).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"// 验证第一本书有标题\r",
+							"pm.test(\"第一本书应该有标题\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response[0]).to.have.property('title');\r",
+							"    pm.expect(response[0].title).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							"// 输出获取到的图书数量\r",
+							"pm.test(\"显示图书数量\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    console.log(\"获取到 \" + response.length + \" 本书\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://jsonplaceholder.typicode.com/posts",
+					"protocol": "https",
+					"host": [
+						"jsonplaceholder",
+						"typicode",
+						"com"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取特定图书详情",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 验证状态码\r",
+							"pm.test(\"状态码应该是200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 验证返回了正确的图书ID\r",
+							"pm.test(\"应该返回正确的图书ID\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.id).to.eql(1);\r",
+							"    console.log(\"获取到图书ID:\", response.id);\r",
+							"});\r",
+							"\r",
+							"// 验证必要的字段都存在\r",
+							"pm.test(\"图书应该包含所有必要字段\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.include.all.keys('id', 'title', 'body', 'userId');\r",
+							"});\r",
+							"\r",
+							"// 验证字段数据类型\r",
+							"pm.test(\"字段数据类型应该正确\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.id).to.be.a('number');\r",
+							"    pm.expect(response.title).to.be.a('string');\r",
+							"    pm.expect(response.body).to.be.a('string');\r",
+							"    pm.expect(response.userId).to.be.a('number');\r",
+							"});\r",
+							"\r",
+							"// 验证标题不为空\r",
+							"pm.test(\"图书标题不应该为空\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.title).to.not.be.empty;\r",
+							"    pm.expect(response.title.length).to.be.above(0);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://jsonplaceholder.typicode.com/posts/1",
+					"protocol": "https",
+					"host": [
+						"jsonplaceholder",
+						"typicode",
+						"com"
+					],
+					"path": [
+						"posts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "添加新图书",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 验证创建成功（201状态码）\r",
+							"pm.test(\"创建成功，状态码应该是201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"// 验证返回的数据匹配发送的数据\r",
+							"pm.test(\"返回数据应该匹配请求数据\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    const requestData = JSON.parse(pm.request.body.raw);\r",
+							"    \r",
+							"    pm.expect(response.title).to.eql(requestData.title);\r",
+							"    pm.expect(response.body).to.eql(requestData.body);\r",
+							"    pm.expect(response.userId).to.eql(requestData.userId);\r",
+							"});\r",
+							"\r",
+							"// 验证服务器生成了ID\r",
+							"pm.test(\"服务器应该生成新的ID\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.id).to.be.a('number');\r",
+							"    pm.expect(response.id).to.be.above(0);\r",
+							"    console.log(\"新创建的图书ID:\", response.id);\r",
+							"});\r",
+							"\r",
+							"// 保存新创建的图书ID供后续使用\r",
+							"pm.test(\"保存新图书ID到环境变量\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.collectionVariables.set(\"new_book_id\", response.id);\r",
+							"    console.log(\"已保存新图书ID到变量: new_book_id =\", response.id);\r",
+							"});\r",
+							"\r",
+							"// 验证响应时间在合理范围内\r",
+							"pm.test(\"响应时间应该小于887ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(887);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"Postman实战教程\",\r\n  \"body\": \"这是一本教你如何使用Postman进行API测试的实用指南\",\r\n  \"userId\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jsonplaceholder.typicode.com/posts",
+					"protocol": "https",
+					"host": [
+						"jsonplaceholder",
+						"typicode",
+						"com"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "更新图书信息",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 验证更新成功\r",
+							"pm.test(\"更新成功，状态码应该是200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 验证数据已正确更新\r",
+							"pm.test(\"数据应该被正确更新\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    const requestData = JSON.parse(pm.request.body.raw);\r",
+							"    \r",
+							"    pm.expect(response.title).to.eql(requestData.title);\r",
+							"    pm.expect(response.body).to.eql(requestData.body);\r",
+							"    pm.expect(response.id).to.eql(requestData.id);\r",
+							"});\r",
+							"\r",
+							"// 验证标题确实被更新了\r",
+							"pm.test(\"标题应该包含更新内容\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.title).to.include(\"更新后的图书标题\");\r",
+							"});\r",
+							"\r",
+							"// 验证响应结构完整\r",
+							"pm.test(\"响应应该包含完整结构\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.have.all.keys('id', 'title', 'body', 'userId');\r",
+							"});\r",
+							"\r",
+							"// 输出更新信息\r",
+							"pm.test(\"显示更新信息\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    console.log(\"成功更新图书:\", response.title);\r",
+							"    console.log(\"更新后的内容:\", response.body);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 1,\r\n  \"title\": \"更新后的图书标题 - Postman高级教程\",\r\n  \"body\": \"这是更新后的内容，包含了更多高级功能和实战技巧\",\r\n  \"userId\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://jsonplaceholder.typicode.com/posts/1",
+					"protocol": "https",
+					"host": [
+						"jsonplaceholder",
+						"typicode",
+						"com"
+					],
+					"path": [
+						"posts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "new_book_id",
+			"value": ""
+		}
+	]
+}
